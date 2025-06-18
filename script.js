@@ -102,8 +102,8 @@ function animateAnimal(animalElement, distance, duration, animal) {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // 골인 1-2초 전에 최종 순위 결정
-        if (progress > 0.8 && !finalOrderDetermined) {
+        // 골인 2-3초 전에 최종 순위 결정 (진행률 60% 지점)
+        if (progress > 0.6 && !finalOrderDetermined) {
             finalOrderDetermined = true;
             determineFinalOrder();
         }
@@ -138,6 +138,9 @@ function determineFinalOrder() {
     );
     
     if (unfinishedAnimals.length > 1) {
+        // 순위 변경 시점을 알리는 시각적 효과
+        showRankingChangeEffect();
+        
         // 랜덤하게 순서를 섞어서 최종 순위 결정
         const shuffled = [...unfinishedAnimals].sort(() => 0.5 - Math.random());
         
@@ -149,15 +152,46 @@ function determineFinalOrder() {
             // 현재 위치에서 골인까지의 거리 계산
             const currentLeft = parseFloat(animalElement.style.left);
             const finishLine = document.querySelector('.race-track').offsetWidth - 100;
-            const remainingDistance = finishLine - currentLeft;
             
-            // 남은 거리를 새로운 순서에 따라 조정
-            const newDuration = 1000 + (index * 200); // 1-2초 사이에 순차적으로 골인
+            // 남은 거리를 새로운 순서에 따라 조정 (더 명확한 차이)
+            const newDuration = 1500 + (index * 300); // 1.5-3초 사이에 순차적으로 골인
             
             // 새로운 애니메이션 시작
             animateToFinish(animalElement, currentLeft, finishLine, newDuration, animal);
         });
     }
+}
+
+// 순위 변경 시각적 효과
+function showRankingChangeEffect() {
+    // 순위 변경 알림 메시지 표시
+    const notification = document.createElement('div');
+    notification.id = 'rankingChangeNotification';
+    notification.textContent = '🎯 순위 역전!';
+    notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+        color: white;
+        padding: 20px 40px;
+        border-radius: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        z-index: 1000;
+        animation: rankingChangePulse 1s ease-in-out;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 1초 후 알림 제거
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 1000);
 }
 
 // 골인까지의 애니메이션
