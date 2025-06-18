@@ -60,14 +60,14 @@ h1 {
     box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
 }
 
-.stop-btn {
-    background: linear-gradient(45deg, #f44336, #da190b);
+.ranking-btn {
+    background: linear-gradient(45deg, #FF9800, #F57C00);
     color: white;
 }
 
-.stop-btn:hover {
+.ranking-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
 }
 
 .replay-btn {

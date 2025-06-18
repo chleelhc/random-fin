@@ -96,10 +96,17 @@ function startRace() {
 function animateAnimal(animalElement, distance, duration, animal) {
     const startTime = Date.now();
     const startPosition = 20;
+    let finalOrderDetermined = false;
     
     function animate() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
+        
+        // 골인 1-2초 전에 최종 순위 결정
+        if (progress > 0.8 && !finalOrderDetermined) {
+            finalOrderDetermined = true;
+            determineFinalOrder();
+        }
         
         // 부드러운 이징 함수
         const easeProgress = 1 - Math.pow(1 - progress, 3);
@@ -123,8 +130,68 @@ function animateAnimal(animalElement, distance, duration, animal) {
     animate();
 }
 
-// 경주 중지
-function stopRace() {
+// 골인 직전 최종 순위 결정
+function determineFinalOrder() {
+    // 아직 완주하지 않은 동물들만 선택
+    const unfinishedAnimals = selectedAnimals.filter(animal => 
+        !finishedAnimals.find(finished => finished.animal === animal)
+    );
+    
+    if (unfinishedAnimals.length > 1) {
+        // 랜덤하게 순서를 섞어서 최종 순위 결정
+        const shuffled = [...unfinishedAnimals].sort(() => 0.5 - Math.random());
+        
+        // 각 동물의 애니메이션을 조정하여 새로운 순서로 골인
+        shuffled.forEach((animal, index) => {
+            const animalIndex = selectedAnimals.indexOf(animal);
+            const animalElement = document.getElementById(`animal${animalIndex + 1}`);
+            
+            // 현재 위치에서 골인까지의 거리 계산
+            const currentLeft = parseFloat(animalElement.style.left);
+            const finishLine = document.querySelector('.race-track').offsetWidth - 100;
+            const remainingDistance = finishLine - currentLeft;
+            
+            // 남은 거리를 새로운 순서에 따라 조정
+            const newDuration = 1000 + (index * 200); // 1-2초 사이에 순차적으로 골인
+            
+            // 새로운 애니메이션 시작
+            animateToFinish(animalElement, currentLeft, finishLine, newDuration, animal);
+        });
+    }
+}
+
+// 골인까지의 애니메이션
+function animateToFinish(animalElement, startPos, endPos, duration, animal) {
+    const startTime = Date.now();
+    
+    function animate() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // 부드러운 이징 함수
+        const easeProgress = 1 - Math.pow(1 - progress, 2);
+        const currentPosition = startPos + ((endPos - startPos) * easeProgress);
+        
+        animalElement.style.left = currentPosition + 'px';
+        
+        if (progress < 1) {
+            animationIds.push(requestAnimationFrame(animate));
+        } else {
+            // 결승선 도착
+            if (!finishedAnimals.find(finished => finished.animal === animal)) {
+                finishedAnimals.push({
+                    animal: animal,
+                    finishTime: Date.now()
+                });
+            }
+        }
+    }
+    
+    animate();
+}
+
+// 순위 표시 (기존 stopRace 함수)
+function showRanking() {
     raceInProgress = false;
     startBtn.disabled = true;
     stopBtn.disabled = true;
@@ -137,14 +204,14 @@ function stopRace() {
     bgMusic.pause();
     
     // 순위 표시
-    showRanking();
+    displayRanking();
     
     // Replay 버튼 표시
     replayBtn.style.display = 'inline-block';
 }
 
 // 순위 표시
-function showRanking() {
+function displayRanking() {
     // 완주하지 못한 동물들도 포함하여 순위 계산
     const allAnimals = selectedAnimals.map((animal, index) => {
         const finished = finishedAnimals.find(f => f.animal === animal);
@@ -196,7 +263,7 @@ function showRanking() {
 
 // 이벤트 리스너 등록
 startBtn.addEventListener('click', startRace);
-stopBtn.addEventListener('click', stopRace);
+stopBtn.addEventListener('click', showRanking);
 replayBtn.addEventListener('click', () => {
     init();
 });
