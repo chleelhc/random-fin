@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동물 경주 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 동물 경주 게임 🏁</h1>
+        
+        <div class="controls">
+            <button id="startBtn" class="btn start-btn">Start</button>
+            <button id="stopBtn" class="btn stop-btn" disabled>Stop</button>
+            <button id="replayBtn" class="btn replay-btn" style="display: none;">Replay</button>
+        </div>
+
+        <div class="race-track">
+            <div class="finish-line"></div>
+            <div class="track" id="track1">
+                <div class="animal" id="animal1"></div>
+            </div>
+            <div class="track" id="track2">
+                <div class="animal" id="animal2"></div>
+            </div>
+            <div class="track" id="track3">
+                <div class="animal" id="animal3"></div>
+            </div>
+            <div class="track" id="track4">
+                <div class="animal" id="animal4"></div>
+            </div>
+            <div class="track" id="track5">
+                <div class="animal" id="animal5"></div>
+            </div>
+        </div>
+
+        <div class="ranking" id="ranking" style="display: none;">
+            <h2>🏆 순위</h2>
+            <div id="rankingList"></div>
+        </div>
+
+        <audio id="bgMusic" loop>
+            <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+        </audio>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
